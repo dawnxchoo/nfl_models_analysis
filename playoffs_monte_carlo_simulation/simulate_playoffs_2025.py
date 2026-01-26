@@ -109,13 +109,7 @@ def compute_win_probability(elo_home, elo_away, hfa, is_neutral=False):
 # ============================================================================
 
 def simulate_game(team_home, team_away, elo_dict, hfa, is_neutral=False):
-    """
-    Simulate a single playoff game.
 
-    Returns:
-        winner: Team abbreviation of the winner
-        p_home_win: Probability that home team won (for debugging)
-    """
     elo_home = elo_dict[team_home]
     elo_away = elo_dict[team_away]
 
@@ -136,22 +130,6 @@ def simulate_game(team_home, team_away, elo_dict, hfa, is_neutral=False):
 # ============================================================================
 
 def simulate_wild_card(conference, seeds, elo_dict, hfa, debug=False):
-    """
-    Simulate Wild Card round for one conference.
-
-    Matchups:
-        2 hosts 7
-        3 hosts 6
-        4 hosts 5
-
-    Seed 1 receives a bye.
-
-    Returns:
-        List of winners (including seed 1)
-    """
-    if debug:
-        print(f"\n--- {conference} WILD CARD ROUND ---")
-
     winners = [seeds[1]]  # Seed 1 gets a bye
 
     matchups = [
@@ -167,10 +145,6 @@ def simulate_wild_card(conference, seeds, elo_dict, hfa, debug=False):
         winner, p_home_win = simulate_game(team_home, team_away, elo_dict, hfa)
         winners.append(winner)
 
-        if debug:
-            print(f"  ({seed_home}) {team_home} vs ({seed_away}) {team_away}: "
-                  f"P({team_home} wins) = {p_home_win:.3f} → Winner: {winner}")
-
     return winners
 
 
@@ -179,19 +153,6 @@ def simulate_wild_card(conference, seeds, elo_dict, hfa, debug=False):
 # ============================================================================
 
 def simulate_divisional(conference, wild_card_winners, seeds, elo_dict, hfa, debug=False):
-    """
-    Simulate Divisional round with reseeding.
-
-    Logic:
-        - Seed 1 hosts the lowest remaining seed
-        - The other two teams play each other (higher seed hosts)
-
-    Returns:
-        List of 2 winners
-    """
-    if debug:
-        print(f"\n--- {conference} DIVISIONAL ROUND ---")
-
     # Map teams back to their original seeds
     team_to_seed = {team: seed for seed, team in seeds.items()}
     remaining_seeds = sorted([team_to_seed[team] for team in wild_card_winners])
@@ -209,18 +170,11 @@ def simulate_divisional(conference, wild_card_winners, seeds, elo_dict, hfa, deb
     # Game 1: Seed 1 hosts lowest seed
     winner_1, p_win_1 = simulate_game(seed_1_team, lowest_team, elo_dict, hfa)
 
-    if debug:
-        print(f"  (1) {seed_1_team} vs ({lowest_seed}) {lowest_team}: "
-              f"P({seed_1_team} wins) = {p_win_1:.3f} → Winner: {winner_1}")
-
     # Game 2: Higher seed hosts lower seed
     team_higher = seeds[higher_seed]
     team_lower = seeds[lower_seed]
     winner_2, p_win_2 = simulate_game(team_higher, team_lower, elo_dict, hfa)
 
-    if debug:
-        print(f"  ({higher_seed}) {team_higher} vs ({lower_seed}) {team_lower}: "
-              f"P({team_higher} wins) = {p_win_2:.3f} → Winner: {winner_2}")
 
     return [winner_1, winner_2]
 
@@ -290,12 +244,6 @@ def simulate_super_bowl(afc_champ, nfc_champ, elo_dict, hfa, debug=False):
 # ============================================================================
 
 def simulate_one_bracket(elo_dict, hfa, debug=False):
-    """
-    Simulate one complete playoff bracket.
-
-    Returns:
-        Dictionary tracking which teams reached each round
-    """
     results = {
         'divisional': [],
         'conf_champ': [],
@@ -337,13 +285,7 @@ def simulate_one_bracket(elo_dict, hfa, debug=False):
 # ============================================================================
 
 def run_simulations(elo_dict, hfa, num_sims, debug=False):
-    """
-    Run multiple playoff simulations and aggregate results.
 
-    Returns:
-        DataFrame with probabilities for each team
-    """
-    print(f"\nRunning {num_sims} playoff simulation(s)...")
 
     # Track counts for each team
     counts = defaultdict(lambda: {

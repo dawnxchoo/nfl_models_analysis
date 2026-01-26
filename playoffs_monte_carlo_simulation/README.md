@@ -46,7 +46,9 @@ python simulate_playoffs_2025.py --sims 1 --seed 42
 
 **Aggregation Mode (multiple simulations):**
 ```bash
+
 python simulate_playoffs_2025.py --sims 10000 --seed 42
+
 ```
 
 **Parameters:**
